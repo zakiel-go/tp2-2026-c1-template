@@ -13,9 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-app.use("/api/users", userRoutes);     
-
-app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);      
 
 // Ruta base
 app.get('/', (req, res) => {

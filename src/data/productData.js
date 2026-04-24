@@ -1,4 +1,3 @@
-let idCounter = 13;
 const mockProducts = [
     { id: "1", name: "Notebook Lenovo Ideapad 3", brand: "Lenovo", category: "notebook", price: 850000, stock: 5 },
     { id: "2", name: "Notebook HP Pavilion 15", brand: "HP", category: "notebook", price: 920000, stock: 3 },
@@ -14,21 +13,35 @@ const mockProducts = [
     { id: "12", name: "SSD Samsung 970 EVO 1TB", brand: "Samsung", category: "almacenamiento", price: 140000, stock: 18 }
 ];
 
-export function findAllProducts() {
-    return mockProducts;
+let nextId = 13;
+
+export function findAllProducts({ category, brand } = {}) {
+    let result = mockProducts;
+    if (category) result = result.filter(p => p.category === category);
+    if (brand) result = result.filter(p => p.brand === brand);
+    return result;
 }
 
-export function saveProduct(productData) {
-    const newProduct = {
-        id: String(idCounter++),
-        ...productData
-    }
+export function findProductById(id) {
+    return mockProducts.find(p => p.id === id) || null;
+}
+
+export function insertProduct(product) {
+    const newProduct = { id: String(nextId++), ...product };
     mockProducts.push(newProduct);
     return newProduct;
 }
 
-export function editProduct(id, productData) {
+export function replaceProduct(id, product) {
     const index = mockProducts.findIndex(p => p.id === id);
-    mockProducts[index] = { id, ...productData };
+    if (index === -1) return null;
+    mockProducts[index] = { id, ...product };
     return mockProducts[index];
+}
+
+export function removeProduct(id) {
+    const index = mockProducts.findIndex(p => p.id === id);
+    if (index === -1) return false;
+    mockProducts.splice(index, 1);
+    return true;
 }
