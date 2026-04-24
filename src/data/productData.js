@@ -1,3 +1,4 @@
+let idCounter = 13;
 const mockProducts = [
     { id: "1", name: "Notebook Lenovo Ideapad 3", brand: "Lenovo", category: "notebook", price: 850000, stock: 5 },
     { id: "2", name: "Notebook HP Pavilion 15", brand: "HP", category: "notebook", price: 920000, stock: 3 },
@@ -13,3 +14,21 @@ const mockProducts = [
     { id: "12", name: "SSD Samsung 970 EVO 1TB", brand: "Samsung", category: "almacenamiento", price: 140000, stock: 18 }
 ];
 
+export function findAllProducts() {
+    return mockProducts;
+}
+
+export function saveProduct(productData) {
+    const newProduct = {
+        id: String(idCounter++),
+        ...productData
+    }
+    mockProducts.push(newProduct);
+    return newProduct;
+}
+
+export function editProduct(id, productData) {
+    const index = mockProducts.findIndex(p => p.id === id);
+    mockProducts[index] = { id, ...productData };
+    return mockProducts[index];
+}
