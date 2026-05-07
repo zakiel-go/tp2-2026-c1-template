@@ -14,7 +14,7 @@ export async function connectToDatabase() {
             client = new MongoClient(uri);
             await client.connect();
             db = client.db("sample_tp2"); 
-            console.log("Conexion a MongoDB establecida");
+            console.log("Connected to MongoDB");
         } catch (error) {
             console.error("Error connecting to MongoDB:", error);
             throw error;

@@ -1,47 +1,39 @@
-const mockProducts = [
-    { id: "1", name: "Notebook Lenovo Ideapad 3", brand: "Lenovo", category: "notebook", price: 850000, stock: 5 },
-    { id: "2", name: "Notebook HP Pavilion 15", brand: "HP", category: "notebook", price: 920000, stock: 3 },
-    { id: "3", name: "Monitor Samsung 24 FHD", brand: "Samsung", category: "monitor", price: 220000, stock: 12 },
-    { id: "4", name: "Monitor LG UltraGear 27", brand: "LG", category: "monitor", price: 360000, stock: 7 },
-    { id: "5", name: "Teclado Logitech K120", brand: "Logitech", category: "teclado", price: 18000, stock: 40 },
-    { id: "6", name: "Teclado Redragon Kumara", brand: "Redragon", category: "teclado", price: 55000, stock: 15 },
-    { id: "7", name: "Mouse Logitech M90", brand: "Logitech", category: "mouse", price: 9000, stock: 60 },
-    { id: "8", name: "Mouse Razer DeathAdder", brand: "Razer", category: "mouse", price: 75000, stock: 10 },
-    { id: "9", name: "Placa de Video GTX 1660 Super", brand: "Nvidia", category: "gpu", price: 480000, stock: 4 },
-    { id: "10", name: "Placa de Video RTX 4060", brand: "Nvidia", category: "gpu", price: 950000, stock: 2 },
-    { id: "11", name: "Memoria RAM Kingston 16GB DDR4", brand: "Kingston", category: "ram", price: 65000, stock: 25 },
-    { id: "12", name: "SSD Samsung 970 EVO 1TB", brand: "Samsung", category: "almacenamiento", price: 140000, stock: 18 }
-];
+import { ObjectId } from "mongodb";
+import { getDb } from "./connection.js";
+import { connectToDatabase } from "./connection.js";
 
-let nextId = 13;
-
-export function findAllProducts({ category, brand } = {}) {
-    let result = mockProducts;
-    if (category) result = result.filter(p => p.category === category);
-    if (brand) result = result.filter(p => p.brand === brand);
-    return result;
+export async function findAllProducts({ category, brand } = {}) {
+    try {
+        const db = getDb();
+        let collection = await db.collection("products").find().toArray();  
+        return collection;
+    } catch (error) {
+        return null;
+    }
 }
 
-export function findProductById(id) {
-    return mockProducts.find(p => p.id === id) || null;
+export async function findProductById(id) {
+    const db = getDb();
+    const prod = await db.collection("products").findOne({ _id: new ObjectId(id)})
+    return prod || null;
 }
 
-export function insertProduct(product) {
-    const newProduct = { id: String(nextId++), ...product };
-    mockProducts.push(newProduct);
+export async function insertProduct(product) {
+    const newProduct = { ...product };
+    const db = getDb();
+    await db.collection("products").insertOne(newProduct);
     return newProduct;
 }
 
-export function replaceProduct(id, product) {
-    const index = mockProducts.findIndex(p => p.id === id);
-    if (index === -1) return null;
-    mockProducts[index] = { id, ...product };
-    return mockProducts[index];
+export async function replaceProduct(id, product) {
+    const db = getDb();
+    const replacedProd = await db.collection("products").findOneAndReplace({ _id: new ObjectId(id) }, product, { returnDocument: "after" }); 
+    return replacedProd;
 }
 
-export function removeProduct(id) {
-    const index = mockProducts.findIndex(p => p.id === id);
-    if (index === -1) return false;
-    mockProducts.splice(index, 1);
-    return true;
+export async function removeProduct(id) {
+    const db = getDb();
+    const resul = await db.collection("products").deleteOne({ _id: new ObjectId(id)})
+    console.log(resul);
+    return resul;
 }

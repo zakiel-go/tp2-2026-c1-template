@@ -24,12 +24,13 @@ function validate(data) {
     }
 }
 
-export function getProducts(filters) {
-    return findAllProducts(filters);
+export async function getProducts(filters) {
+    const products = await findAllProducts(filters);
+    return products;
 }
 
-export function getProductById(id) {
-    const product = findProductById(id);
+export async function getProductById(id) {
+    const product = await findProductById(id);
     if (!product) {
         const err = new Error("Producto no encontrado");
         err.status = 404;
@@ -38,13 +39,15 @@ export function getProductById(id) {
     return product;
 }
 
-export function createProduct(data) {
+export async function createProduct(data) {
     validate(data);
-    return insertProduct({ name: data.name.trim(), brand: data.brand, category: data.category, price: data.price, stock: data.stock });
+    const product = { name: data.name.trim(), brand: data.brand, category: data.category, price: data.price, stock: data.stock }
+    await insertProduct(product);
+    return product;
 }
 
-export function updateProduct(id, data) {
-    const existing = findProductById(id);
+export async function updateProduct(id, data) {
+    const existing = await findProductById(id);
     if (!existing) {
         const err = new Error("Producto no encontrado");
         err.status = 404;
@@ -54,9 +57,9 @@ export function updateProduct(id, data) {
     return replaceProduct(id, { name: data.name.trim(), brand: data.brand, category: data.category, price: data.price, stock: data.stock });
 }
 
-export function deleteProduct(id) {
-    const deleted = removeProduct(id);
-    if (!deleted) {
+export async function deleteProduct(id) {
+    const deleted = await removeProduct(id);
+    if (deleted == 0) {
         const err = new Error("Producto no encontrado");
         err.status = 404;
         throw err;
